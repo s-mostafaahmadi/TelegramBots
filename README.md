@@ -1,45 +1,73 @@
 # TelegramBots
 
-Zwei kleine Telegram-Bots in Python, die meinen Windows-Desktop per Chat steuern bzw. beim Deutschlernen helfen. Beide Bots laufen lokal und nutzen `pyTelegramBotAPI` (`telebot`).
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Telegram](https://img.shields.io/badge/Telegram-Bot%20API-26A5E4?logo=telegram&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows-0078D4?logo=windows&logoColor=white)
+
+Two small Telegram bots in Python: one controls a Windows desktop from the chat, the other drills German vocabulary and sentences. Both run locally and use `pyTelegramBotAPI` (`telebot`).
+
+## How they work
+
+```mermaid
+flowchart LR
+    T[Telegram chat] --> B{Bot}
+    B -->|tah3in_bot| D[Windows desktop<br/>pyautogui · subprocess]
+    D --> I[Internet Download Manager]
+    B -->|deutsch_bot| V[Wordlist.txt<br/>Sentencelist.txt<br/>Note.txt]
+    V --> B
+```
 
 ## Bots
 
-### `tah3in_bot` – Desktop-Fernsteuerung
+### `tah3in_bot` — desktop remote control
 
-- Nimmt Links per Telegram an und startet den Download über den Internet Download Manager (`Open_IDM.py`).
-- Arbeitet mit dem Desktop über `pyautogui` und `subprocess` (z. B. Dateien und Ordner öffnen).
-- Merkt sich den Zustand pro Chat (`user_states`), damit mehrstufige Befehle funktionieren.
-- Einstiegspunkt: `tah3in_bot.py`
+- Accepts links and starts downloads through Internet Download Manager (`Open_IDM.py`).
+- Drives the desktop via `pyautogui` and `subprocess` (open files and folders, take screenshots).
+- Tracks per-chat state (`user_states`) so multi-step commands work.
+- Owner-only commands (`/start`, `/Shutdown`) are protected by a user-ID allow-list.
+- Entry point: `tah3in_bot.py`
 
-### `deutsch_bot` – Vokabel- und Satztrainer
+### `deutsch_bot` — vocabulary and sentence trainer
 
-- Liest Wort- und Satzlisten aus `Wordlist.txt` und `Sentencelist.txt`.
-- Fragt Wörter bzw. Sätze ab und schreibt neue Einträge zurück in die Liste (`replace_line_in_file`).
-- Einstiegspunkt: `deutsch_bot.py`
+- Reads word and sentence lists from `Wordlist.txt` and `Sentencelist.txt`.
+- Quizzes words and sentences, and writes new entries back to the list (`replace_line_in_file`).
+- Auto-display modes push one item every few seconds for passive repetition.
+- Entry point: `deutsch_bot.py`
 
-## Einrichtung
+## Setup
 
-1. Bot-Token bei [@BotFather](https://t.me/BotFather) erstellen und in beiden Dateien bei `BOT_TOKEN = ...` eintragen. Das Token gehört **nicht** ins Repository.
-2. Abhängigkeiten installieren:
+1. Create a bot token with [@BotFather](https://t.me/BotFather) and export it — the token never belongs in the source:
+
+   ```bash
+   # PowerShell
+   $env:BOT_TOKEN="123456:ABC..."
+   ```
+
+2. Install dependencies:
 
    ```bash
    pip install pyTelegramBotAPI pyautogui
    ```
 
-3. Bot starten, jeweils im eigenen Ordner:
+3. Start a bot from its own folder:
 
    ```bash
-   cd tah3in_bot
-   python tah3in_bot.py
+   cd tah3in_bot && python tah3in_bot.py
+   cd deutsch_bot && python deutsch_bot.py
    ```
 
-   ```bash
-   cd deutsch_bot
-   python deutsch_bot.py
-   ```
+## Commands (`deutsch_bot`)
 
-## Voraussetzungen
+| Command | Action |
+| --- | --- |
+| `/AddW`, `/AddS`, `/AddN` | Add a word, sentence or note |
+| `/DisplayW`, `/DisplayS`, `/DisplayN` | Show the next random entry |
+| `/DisplayAutoW [n]`, `/DisplayAutoS [n]` | Auto-display `n` entries (default 20) |
+| `/Edit` | Fix an existing entry by its original text |
+| `/help`, `/Exit` | Help / leave the current mode |
 
-- Windows (Desktop-Steuerung und IDM-Anbindung sind Windows-spezifisch)
+## Requirements
+
+- Windows (desktop control and IDM integration are Windows-specific)
 - Python 3.10+
-- Internet Download Manager für `Open_IDM.py`
+- Internet Download Manager for `Open_IDM.py`
