@@ -6,8 +6,11 @@ from pathlib import Path
 import os
 import subprocess
 
-# Replace 'YOUR_BOT_TOKEN_HERE' with your actual bot token
-BOT_TOKEN = ...
+# The bot token is read from the environment; never commit it.
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+if not BOT_TOKEN:
+    raise SystemExit("BOT_TOKEN is not set. Export it before starting the bot.")
+
 # Initialize the Telegram bot
 bot = telebot.TeleBot(BOT_TOKEN)
 
